@@ -2,7 +2,6 @@ from flask import Flask, render_template, jsonify, request
 from flask_apscheduler import APScheduler
 from github3 import login
 from github3 import authorize
-from getpass import getuser, getpass
 import datetime
 
 from github import Github
@@ -50,9 +49,6 @@ def checkGistBackgroundTask():
             #Get the right gist
             if g.id == gistID:
                 rawLine = str(g.files['valentinesDay'].content()).strip()
-                
-        print(rawLine) #Get gist just fine. 
-        print(gistOldLine)
 
         #Compare against old line. Update if new data
         if rawLine != gistOldLine:
@@ -68,16 +64,35 @@ def checkGistBackgroundTask():
     #401 Bad credentials
     #[Errno 2] No such file or directory: 'valentinesCreds.txt'
 
-    
+#checkGist will recieve the latest text from website    
 @app.route('/checkGist', methods=['GET', 'POST'])  
 def checkGist():
+    #Setup return dict
     toReturn = {'newData': 'False',
                 'data': 'None'}
-    
+
     #Set variables to global
     global gistNewData
     global gistOldLine
     global gistLine
+    
+    #Get latest gistLine from the website.
+    try:
+        websiteCurrent = request.args.get('webFrontEnd', 0)
+        
+        print('Website: ', websiteCurrent)
+        print('gistLine: ', gistLine)
+        print('gistOldLine: ', gistOldLine)
+        
+        #See if website (Front/Back end) is out of sync str(bytes_string, 'utf-8')
+        if websiteCurrent != gistLine:
+            print('Website needs update. Current: ', websiteCurrent)
+            
+            gistNewData = True
+
+    except Exception as e:
+        print('Exception: ',e)
+                
     
     if gistNewData:
         toReturn['newData'] = 'True'
@@ -111,8 +126,8 @@ def initAuthGitHub():
     password = results['githubPassword']
 
     #Need to do some better error handling
-    while not password:
-        password = getpass('Password for {0}: '.format(user))
+    #while not password:
+    #    password = getpass('Password for {0}: '.format(user))
 
     #Define scopes and note name
     note = 'Valentines Day Gist App'

@@ -10,8 +10,12 @@ var restartScreenSaver = setInterval(screenSaverON, 5000)
 function checkForNewLine() {
   console.log('Checking for data');
 
+  var currentText = document.getElementById("gistLine").innerHTML;
+  var flaskUrl = "http://192.168.1.102:5000/checkGist?webFrontEnd=" + currentText;
+  console.log(flaskUrl)
+    
   $.ajax({
-    url: "http://192.168.1.102:5000/checkGist",
+    url: flaskUrl,
     success: function(result) {
 
       if (result["newData"] == "True") {
@@ -28,6 +32,7 @@ function checkForNewLine() {
 
 //Turn the screen blank - 'Screen Saver'
 function screenSaverON() {
+  console.log('Enable screensaver')
   document.getElementById("overlay").style.display = "block";
 }
 
@@ -42,6 +47,8 @@ function screenSaverOFF() {
   //Stop screensaver
   clearInterval(restartScreenSaver);
 
+  console.log('Waiting to turn off screensave - 10 seconds')
+    
   //Wait
   setTimeout(function() {
     //Restart when done
@@ -60,7 +67,8 @@ function showNotification() {
 //Page load events
 window.addEventListener('load', function() {
 
-  screenSaverON()
+  //Init blank sceen
+  document.getElementById("overlay").style.display = "block";
   showNotification()
 
 });
