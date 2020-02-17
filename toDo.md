@@ -1,18 +1,22 @@
 Still to do...
 
 - Try to get fades to work
--  [x] Call some kind of default message
-- Switch to GitHub tokens
+- [x] Call some kind of default message
+- [x] Switch to GitHub tokens
 - [x] Move to google fonts
-- Publish to Github
- - Ignore password file
- - Maybe create user/pass login for first time users
+- [x] Publish to Github
+- [x] Ignore password file
+- [ ] Maybe create user/pass login for first time users
 
-- Setup rPi
- - Load OS
- - Wifi
- - Setup display https://github.com/pimoroni/hyperpixel4
- - Load browser without buttons (--kiosk)
- - Autoload browser on boot
+- [x] Setup rPi
+- [x] Load OS
+- [x] Wifi
+- [x] Setup display https://github.com/pimoroni/hyperpixel4
+- [x] Load browser without buttons (--kiosk)
+- [x] Autoload browser on boot
 
 - 3D Print
+
+ReadMe/Documentation
+- [ ] Set up rPi wifi/ssh/raspbian OS
+- [ ] Setup display https://github.com/pimoroni/hyperpixel4
