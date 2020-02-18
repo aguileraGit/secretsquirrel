@@ -4,17 +4,23 @@
 <head>
 
   <!-- Credit: http://stackoverflow.com/questions/22196587/how-to-center-align-vertically-the-container-in-bootstrap -->
-  <title>Bootstrap Centered Jumbotron</title>
+  <title>Love Machine</title>
   <meta charset="utf-8" />
 
   <!-- JavaScript -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+
+  <!-- Icons - COG -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/open-iconic/1.1.1/font/css/open-iconic-bootstrap.min.css" rel="stylesheet">
+
+  <!-- Load custom JS -->
   <script src="/static/js/myScript.js"></script>
 
   <!-- Google Fonts -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Pacifico">
 
+  <!-- Bootstap -->
   <link type="text/css" rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" />
 
   <style type="text/css">
@@ -104,6 +110,7 @@
 
 <body>
 
+  <!-- Draw Heart -->
   <div id="notify">
     <svg class="heart" viewBox="0 0 32 29.6">
       <path d="M23.6,0c-3.4,0-6.3,2.7-7.6,5.6C14.7,2.7,11.8,0,8.4,0C3.8,0,0,3.8,0,8.4c0,9.4,9.5,11.9,16,21.2
@@ -111,44 +118,47 @@ c6.1-9.3,16-12.1,16-21.2C32,3.8,28.2,0,23.6,0z" />
     </svg>
   </div>
 
+  <!-- Overlay that detects when the screen is pressed -->
   <div id="overlay" onclick="screenSaverOFF()"> </div>
-
-  <!-- Button trigger modal -->
-  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
-    Launch demo modal
-  </button>
 
   <!-- Modal -->
   <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+          <h4 class="modal-title" id="exampleModalLabel">Login to Github</h4>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
         <div class="modal-body">
+          <div>
+            <p class="pb-2"><small class="text-muted">Login to Github to generate token and Gist. You only need to do this once. See Github repo for more information.</small></p>
+          </div>
             <form action="http://192.168.1.104:5000/initAuthGitHub" method="POST">
               <div class="form-group">
-                <label for="exampleInputEmail1">Email address</label>
+                <label for="exampleInputEmail1">Github Login</label>
                 <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email" name="githubLogin">
                 <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
               </div>
               <div class="form-group">
-                <label for="exampleInputPassword1">Password</label>
+                <label for="exampleInputPassword1">Github Password</label>
                 <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password" name="githubPassword">
               </div>
 
               <button type="submit" class="btn btn-primary">Submit</button>
             </form>
         </div>
-
       </div>
     </div>
   </div>
 
+  <!-- COG to trigger modal -->
+  <div class="sticky-top float-right">
+    <span class="oi oi-cog" aria-hidden="true" data-toggle="modal" data-target="#exampleModal"></span>
+  </div>
 
+  <!-- Main page -->
   <div class="jumbotron vertical-center">
     <div class="container text-center">
       <div class="display-3" id="gistLine">Love ya!</div>
