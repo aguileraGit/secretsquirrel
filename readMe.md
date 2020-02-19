@@ -1,4 +1,6 @@
 
+### Clone repo
+```git clone```
 
 ### Running Flask Server as a service
 Create service file. `sudo touch /etc/systemd/system/flaskServer.service`
