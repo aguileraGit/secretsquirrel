@@ -1,6 +1,6 @@
 
 ### Clone repo
-```git clone```
+```git clone git@github.com:aguileraGit/secretsquirrel.git```
 
 ### Running Flask Server as a service
 Create service file. `sudo touch /etc/systemd/system/flaskServer.service`
