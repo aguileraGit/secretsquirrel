@@ -43,5 +43,14 @@ Exec=chromium-browser http://192.168.1.104:5000 --kiosk
 ```
 
 ### Disable screen from sleeping
-Edit file: `sudo nano /etc/lightdm/lightdm.conf`
-Add this line at the end of the file: `xserver-command=X -s 0 dpms`
+Need to disable the screen from going to sleep
+Script is already included in repo. `disableScreenSaver.sh`
+Make it executable. `chmod +x /home/pi/disableScreenSaver.sh`
+Create a file to autostart the script. `/home/pi/.config/autostart`
+Add the following
+```
+[Desktop Entry]
+Type=Application
+Name=Disable screen screensaver
+Exec="/home/pi/disableScreenSaver.sh"
+```
