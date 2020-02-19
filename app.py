@@ -22,7 +22,7 @@ class Config(object):
 
 
 # Schedule task to check for new data on gist
-@scheduler.task('interval', id='tskCheckGist', seconds=15, misfire_grace_time=900)
+@scheduler.task('interval', id='tskCheckGist', seconds=(2*60), misfire_grace_time=900)
 def checkGistBackgroundTask():
     print('Checking Gist')
     #Set variables to global
@@ -80,9 +80,9 @@ def checkGist():
     try:
         websiteCurrent = request.args.get('webFrontEnd', 0)
         
-        print('Website: ', websiteCurrent)
-        print('gistLine: ', gistLine)
-        print('gistOldLine: ', gistOldLine)
+        #print('Website: ', websiteCurrent)
+        #print('gistLine: ', gistLine)
+        #print('gistOldLine: ', gistOldLine)
         
         #See if website (Front/Back end) is out of sync str(bytes_string, 'utf-8')
         if websiteCurrent != gistLine:

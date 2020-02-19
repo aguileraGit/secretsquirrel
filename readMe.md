@@ -13,6 +13,7 @@ After=network.target
 Type=simple
 Restart=always
 User=pi
+WorkingDirectory=/home/pi/secretsquirrel
 ExecStart=/usr/bin/python3 /home/pi/secretsquirrel/app.py
 
 [Install]
@@ -36,7 +37,7 @@ Add text below to file. `nano /home/pi/.config/autostart/chromeAutoStart.desktop
 [Desktop Entry]
 Type=Application
 Name=StartBrowser
-Exec=chromium-browser http://192.168.1.14:5000 --kiosk
+Exec=chromium-browser http://192.168.1.104:5000 --kiosk
 ```
 
 ### Disable screen from sleeping
