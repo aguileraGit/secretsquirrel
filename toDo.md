@@ -39,5 +39,7 @@ ReadMe/Documentation
 
 Features
 - [ ] Add images/movies. Use regex to capture jpg/jpeg/gif/svg or link to youtube and embed.
+ - https://regex101.com/r/XblFpm/1
+ - https://regex101.com/r/OY96XI/5
 - [ ] Turn off display at night
 
