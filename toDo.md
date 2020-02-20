@@ -7,6 +7,7 @@ General
 - [x] Move to google fonts
 - [x] Publish to Github
 - [x] Ignore password file
+- [ ] Move away from multiple Github libraries if possible.
 
 OS
 - [x] Setup rPi
@@ -17,7 +18,7 @@ OS
 - [x] Autoload browser on boot
 - [ ] Control backlight using Python
 - [ ] Look @ /etc/rc.local -> I believe I have extra stuff to remove
-- [ ] Stop Desktop from loading. It takes up too many resources. 
+- [ ] Stop Desktop from loading. It takes up too many resources.
  - *Newer* https://www.raspberrypi.org/forums/viewtopic.php?t=255635
  - https://www.raspberrypi.org/forums/viewtopic.php?t=42888
  - https://www.raspberrypi.org/forums/viewtopic.php?t=73585
@@ -42,4 +43,3 @@ Features
  - https://regex101.com/r/XblFpm/1
  - https://regex101.com/r/OY96XI/5
 - [ ] Turn off display at night
-

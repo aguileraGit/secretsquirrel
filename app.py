@@ -2,6 +2,9 @@ from flask import Flask, render_template, jsonify, request
 from flask_apscheduler import APScheduler
 from github3 import login
 from github3 import authorize
+from enum import Enum
+import re
+
 import datetime
 
 from github import Github
@@ -14,6 +17,11 @@ gistError = None
 CREDENTIALS_FILE = 'valentinesCreds.txt'
 
 app = Flask(__name__)
+
+class gistTypeOptions(Enum):
+    text = 1
+    image = 2
+    video = 3
 
 #Setup Scheduler to check Github for updates
 scheduler = APScheduler()
@@ -29,7 +37,7 @@ def checkGistBackgroundTask():
     global gistNewData
     global gistOldLine
     global gistLine
-    
+
     #Make sure a Credential file exists and contains token and id
     try:
         token = id = ''
@@ -37,8 +45,8 @@ def checkGistBackgroundTask():
             token = fd.readline().strip()
             id = int( fd.readline().strip() )
             gistID = str(fd.readline().strip() )
-            
-        #Login            
+
+        #Login
         gh = login(token=token)
 
         #Get all gists
@@ -54,9 +62,9 @@ def checkGistBackgroundTask():
         if rawLine != gistOldLine:
             gistNewData = True
             gistLine = rawLine.strip()
-            
+
     except Exception as e:
-        
+
         print('Background Exception: ', e)
         gistLine = e
         gistNewData = True
@@ -64,60 +72,93 @@ def checkGistBackgroundTask():
     #401 Bad credentials
     #[Errno 2] No such file or directory: 'valentinesCreds.txt'
 
-#checkGist will recieve the latest text from website    
-@app.route('/checkGist', methods=['GET', 'POST'])  
+#checkGist will recieve the latest text from website
+@app.route('/checkGist', methods=['GET', 'POST'])
 def checkGist():
     #Setup return dict
     toReturn = {'newData': 'False',
-                'data': 'None'}
+                'data': 'None',
+                'type': 'None'}
 
     #Set variables to global
     global gistNewData
     global gistOldLine
     global gistLine
-    
+
     #Get latest gistLine from the website.
     try:
         websiteCurrent = request.args.get('webFrontEnd', 0)
-        
+
         #print('Website: ', websiteCurrent)
         #print('gistLine: ', gistLine)
         #print('gistOldLine: ', gistOldLine)
-        
+
         #See if website (Front/Back end) is out of sync str(bytes_string, 'utf-8')
         if websiteCurrent != gistLine:
             print('Website needs update. Current: ', websiteCurrent)
-            
+
             gistNewData = True
 
     except Exception as e:
         print('Exception: ',e)
-                
-    
+
+    #Updated content
     if gistNewData:
+        #Determine the type (text, picture, video)
+        gistType, gistDiv = determineGistType( str(gistLine) )
+
         toReturn['newData'] = 'True'
-        toReturn['data'] = str(gistLine)
-        
+        #Returns html line to display
+        toReturn['data'] = str(gistDiv)
+        toReturn['type'] = gistType
+
         #Update globals
         gistOldLine = str(gistLine)
         gistNewData = False
 
     return jsonify(toReturn)
 
+#Gist can be line of text, image, or youtube video
+#Return type and line
+def determineGistType(gistLineInQuestion):
+    regexImage = r"(?:https?:\/\/)?(?:(\w+)\.){1,}\w+(?:\/.*){1,}\.(?:jpg|gif|png)"
+    regexVideo = r"(?:https?:)?(?:\/\/)?(?:[0-9A-Z-]+\.)?(?:youtu\.be\/|youtube(?:-nocookie)?\.com\/\S*?[^\w\s-])((?!videoseries)[\w-]{11})(?=[^\w-]|$)(?![?=&+%\w.-]*(?:['\"][^<>]*>|<\/a>))[?=&+%\w.-]*"
+
+    #Default to type being text
+    gistType = gistTypeOptions.text
+    gistText = str(gistLineInQuestion)
+    gistDiv = "<div>" + gistText + "</div>"
+
+    #Search for image
+    match = re.search(regexImage, gistLineInQuestion, re.IGNORECASE | re.MULTILINE)
+    if match:
+        gistType = gistTypeOptions.image
+        gistText = str(match.group(0))
+        #Generate the div to return
+        gistDiv = "<div><img src=\"" + gistText +"\"></div>"
+
+
+    #Search for video
+    match = re.search(regexVideo, gistLineInQuestion, re.IGNORECASE | re.MULTILINE)
+    if match:
+        gistType = gistTypeOptions.video
+        gistText = str(match.group(0))
+
+    return gistType, gistDiv
 
 
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/index', methods=['GET', 'POST'])
 def displayWebPage():
     return render_template('index.html')
-    
-  
+
+
 #Inital Login to Github
 #Setups gist and token
 @app.route('/initAuthGitHub', methods=['POST'])
 def initAuthGitHub():
     print('Auth Time')
-    
+
     #Get Github login info
     if request.method == 'POST':
         results = request.form.to_dict()
@@ -132,11 +173,11 @@ def initAuthGitHub():
     #Define scopes and note name
     note = 'Valentines Day Gist App'
     scopes = ['user', 'gist']
-    
+
     #Connect to Github
     try:
         auth = authorize(user, password, scopes, note)
-        
+
         #Write token and ID to file to read later.
         with open(CREDENTIALS_FILE, 'w+') as fd:
             fd.write(str(auth.token) + '\n')
@@ -148,7 +189,7 @@ def initAuthGitHub():
         #Github API throws up exception, but still creates the API token
         #Ignoring it for now. Will look at later.
         print(e)
-        
+
     print('Done creating token')
 
     #Login using token
@@ -157,21 +198,21 @@ def initAuthGitHub():
         with open(CREDENTIALS_FILE, 'r') as fd:
             token = fd.readline().strip()
             id = int( fd.readline().strip() )
-        
+
         print('Token read')
-        
-        #Login            
+
+        #Login
         gh = login(token=token)
         print(gh)
         #auth = gh.authorization(id)
-        
+
         print('Logged in with token!')
-    
+
         #DummyText for testing
         dateNowStr = datetime.datetime.now().strftime("%m/%d/%Y-%H:%M:%S")
-    
+
         #Create gist
-        
+
         files = {
         'valentinesDay' : {
             'content': dateNowStr
@@ -179,19 +220,19 @@ def initAuthGitHub():
         }
 
         gist = gh.create_gist('gistName', files, public=False)
-        
+
         print('Created gist')
-        
+
         # gist == <Gist [gist-id]>
         print(gist.html_url)
-        
+
         gistID = gist.html_url.split('/')[-1]
         with open(CREDENTIALS_FILE, 'a') as fd:
             fd.write(str(gistID) + '\n')
-        
+
     except Exception as e:
         print(e)
-        
+
     finally:
         #Reload page
         return render_template('index.html')
@@ -206,7 +247,7 @@ checkGistBackgroundTask()
 if __name__ == '__main__':
 
     app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
-    
+
     #Call config
     app.config.from_object(Config())
 
