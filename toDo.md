@@ -13,7 +13,7 @@ OS
 - [x] Setup rPi
 - [x] Load OS
 - [x] Wifi
-- [x] Setup display https://github.com/pimoroni/hyperpixel4
+- [x] Setup display https://github.com/pimoroni/hyperpixel4 - Weirdly Square - Pi 3B+ or older
 - [x] Load browser without buttons (--kiosk)
 - [x] Autoload browser on boot
 - [ ] Control backlight using Python
