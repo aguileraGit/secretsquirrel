@@ -22,7 +22,6 @@ OS
  - *Newer* https://www.raspberrypi.org/forums/viewtopic.php?t=255635
  - https://www.raspberrypi.org/forums/viewtopic.php?t=42888
  - https://www.raspberrypi.org/forums/viewtopic.php?t=73585
- - Google: raspberry pi start single gui without desktop
  - Pip3: install pip - sudo apt install python3-pip
  - Python modules: pip3 install flask flask_apscheduler PyGithub github3.py --user
  
