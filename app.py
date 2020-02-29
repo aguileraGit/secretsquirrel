@@ -89,12 +89,21 @@ def checkGist():
     try:
         websiteCurrent = request.args.get('webFrontEnd', 0)
 
-        #print('Website: ', websiteCurrent)
-        #print('gistLine: ', gistLine)
-        #print('gistOldLine: ', gistOldLine)
+        print('Website: ', websiteCurrent)
+        print('gistLine: ', gistLine)
+        print('gistOldLine: ', gistOldLine)
 
         #See if website (Front/Back end) is out of sync str(bytes_string, 'utf-8')
-        if websiteCurrent != gistLine:
+        #Website now contains <div>text<div>
+        #divMatch = r"[^<>]+(?=[<])"
+        #match = re.search(divMatch, websiteCurrent)
+        #print(match)
+        #print(match.group(0))
+
+        #if websiteCurrent != gistLine:
+        #if match != gistLine:
+        #if match.group(0):
+        if gistLine not in websiteCurrent:
             print('Website needs update. Current: ', websiteCurrent)
 
             gistNewData = True
@@ -110,11 +119,13 @@ def checkGist():
         toReturn['newData'] = 'True'
         #Returns html line to display
         toReturn['data'] = str(gistDiv)
-        toReturn['type'] = gistType
+        toReturn['type'] = str(gistType.name)
 
         #Update globals
         gistOldLine = str(gistLine)
         gistNewData = False
+
+        print(toReturn)
 
     return jsonify(toReturn)
 
