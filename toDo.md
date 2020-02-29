@@ -31,9 +31,9 @@ OS
 
 ReadMe/Documentation
 - [ ] Set up rPi wifi/ssh/raspbian OS
-- [ ] Add link for setup display https://github.com/pimoroni/hyperpixel4
+- [ ] Add link for setup display https://github.com/pimoroni/hyperpixel4 - Weirdly Square - Pi 3B+ or older
 - [ ] Update ReadMe to include general statement about the interaction with Github
-- [ ] Link for Github ssh setup
+- [ ] Link for Github ssh setup - https://help.github.com/en/github/authenticating-to-github/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent
 - [ ] Removal instructions
 - [ ] Move readMe scripts to new folder. -> Make it copy/permissions
 - [ ] Update documentation if moving away from Startx (Desktop)
