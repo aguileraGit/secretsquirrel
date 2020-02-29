@@ -10,7 +10,7 @@ General
 - [ ] Move away from multiple Github libraries if possible.
 
 OS
-- [x] Setup rPi
+- [x] Setup rPi - https://www.raspberrypi.org/documentation/configuration/wireless/headless.md
 - [x] Load OS
 - [x] Wifi
 - [x] Setup display https://github.com/pimoroni/hyperpixel4 - Weirdly Square - Pi 3B+ or older
