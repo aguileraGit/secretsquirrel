@@ -181,6 +181,9 @@ def initAuthGitHub():
     #while not password:
     #    password = getpass('Password for {0}: '.format(user))
 
+    if user == '' or password == '':
+        return render_template('index.html')
+
     #Define scopes and note name
     note = 'Valentines Day Gist App'
     scopes = ['user', 'gist']
@@ -196,10 +199,18 @@ def initAuthGitHub():
 
         auth.delete()
 
+    except (DeprecationWarning):
+        print('Exception - Deprecation Warning')
+
     except Exception as e:
         #Github API throws up exception, but still creates the API token
         #Ignoring it for now. Will look at later.
+
         print(e)
+
+        if e == '401 Bad credentials':
+            print('Exception - 401 Bad credentials')
+            return render_template('index.html')
 
     print('Done creating token')
 

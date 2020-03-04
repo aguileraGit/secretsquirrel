@@ -44,7 +44,7 @@ xset s off
 xset s noblank
 
 unclutter &
-chromium-browser http://192.168.1.104:5000 --start-fullscreen --kiosk --no-first-run --fast --fist-start --noerrdialogs --disable-session-crashed-bubble --disable-infobars
+chromium-browser http://192.168.1.104:5000 --start-fullscreen --kiosk --no-first-run --fast --noerrdialogs --disable-session-crashed-bubble --disable-infobars --window-size=720,720
 ```
 
 ### Make preformance improvement
