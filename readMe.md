@@ -1,21 +1,23 @@
-Directions are for a Raspberry Pi Zero W
+## The Love Machine
+Clone of https://en.lovebox.love
 
-### Setup RPi 
+Duplicated with Raspberry Pi Zero W and HyperPixel display. Has no lid. Show beating heart when message is received. Uses Github Gist to send messages.
+
+### Setup RPi
 
 [Install Raspbian Buster Lite](https://www.raspberrypi.org/downloads/raspbian/). Do not install GUI!
 
 [Setup headless - SSH & Wireless](https://www.raspberrypi.org/documentation/configuration/wireless/headless.md)
 
-Setup to autologin.
-`sudo raspi-config`
+Setup to autologin console. `sudo raspi-config`
 
 ### Setup Router for static IP
-The server will need a static IP. 
+The server will need a static IP.
 
 ### Install PIP and packages
  - Pip3: install pip - sudo apt install python3-pip
  - Python modules: pip3 install flask flask_apscheduler PyGithub github3.py --user
- 
+
 ### Setup Display
 [HyperPixel](https://github.com/pimoroni/hyperpixel4). Select Weirdly Square - Pi 3B+ or older
 
@@ -36,7 +38,7 @@ Unclutter removes mouse pointer
 `sudo apt-get install unclutter`
 
 ###
-Edit or add `.xinitrc` with the following text. Be sure to update your IP. 
+Edit or add `.xinitrc` with the following text. Be sure to update your IP.
 ```
 #!/bin/sh
 xset -dpms
@@ -54,7 +56,7 @@ Install optimized version of Chromium
 
 Increase swap size
 `sudo nano /etc/dphys-swapfile` update to `CONF_SWAPFILE=256`
- 
+
 ### Clone repo
 ```git clone git@github.com:aguileraGit/secretsquirrel.git```
 
@@ -82,4 +84,5 @@ Start the service. `sudo systemctl start flaskServer`
 
 Enable the service after reboots. `sudo systemctl enable flaskServer`
 
-
+### Update IPs
+xinitrc, app.py, myScript.js, and index.html
