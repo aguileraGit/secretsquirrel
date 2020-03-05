@@ -6,6 +6,7 @@ General
 - [ ] IP is hard coded in xinitrc, app.py, js, and index.html. Fix it.
 - [ ] Disable zoom on screen
 - [ ] Verify the heart is clickable
+- [ ] [Make more powerful](https://www.raspberrypi.org/forums/viewtopic.php?f=29&t=266361&p=1619404#p1619404)
 
 3D Print case
 - [ ] Need to add 3D stand-offs
