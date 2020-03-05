@@ -4,6 +4,8 @@ General
 - [ ] Move away from multiple Github libraries if possible.
 - [ ] Better error checking for logging in
 - [ ] IP is hard coded in xinitrc, app.py, js, and index.html. Fix it.
+- [ ] Disable zoom on screen
+- [ ] Verify the heart is clickable
 
 3D Print case
 - [ ] Need to add 3D stand-offs
