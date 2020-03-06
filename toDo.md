@@ -7,11 +7,13 @@ General
 - [ ] Disable zoom on screen
 - [ ] Verify the heart is clickable
 - [ ] [Make more powerful](https://www.raspberrypi.org/forums/viewtopic.php?f=29&t=266361&p=1619404#p1619404)
+- [ ] Add form field for 'nickname' so multiple ones exist
 
 3D Print case
-- [ ] Need to add 3D stand-offs
-- [ ] Make the USB hole bigger or ...
-- [ ] Make a small tab that slides in with room for the cable
+- [x] Need to add 3D stand-offs
+- [x] ~~Make the USB hole bigger or ...~~
+- [x] Make a small tab that slides in with room for the cable
+- [x] Push files online
 
 ReadMe/Documentation
 - [ ] Update ReadMe to include general statement about the interaction with Github
