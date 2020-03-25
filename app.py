@@ -1,20 +1,16 @@
 from flask import Flask, render_template, jsonify, request
 from flask_apscheduler import APScheduler
-from github3 import login
-from github3 import authorize
 from enum import Enum
 import re
-
 import datetime
+import github
 
-from github import Github
+# Credential file always has the same format
+# Github Token
+# Github Gist Name
+# Github Gist ID
+CREDENTIALS_FILE_V2 = 'appCreds.txt'
 
-gistOldLine = 'Love ya!'
-gistLine = None
-gistNewData = True
-gistError = None
-
-CREDENTIALS_FILE = 'valentinesCreds.txt'
 
 app = Flask(__name__)
 
@@ -22,6 +18,111 @@ class gistTypeOptions(Enum):
     text = 1
     image = 2
     video = 3
+
+class appFunctions:
+    def __init__(self, credentialFile):
+        self.gistOldLine = 'Love ya!'
+        self.gistLine = None
+        self.gistNewData = True
+
+        self.credentialFile = credentialFile
+
+        self.gh = None
+
+    #Login using token. Returns True or False.
+    def githubLogin(self):
+        #Look for credentialsFile - returns 0 if OK
+        if self.verifyCredentialFile() == False:
+            return False
+
+        #Read credentials file and get token
+        token = self.readCredentialsToken()
+
+        #Login
+        self.gh = None
+        self.gh = github.Github(token)
+
+        #Unsure this is the best way to know if a user is actually logged in
+        #print('Debug - githubLogin - login:', self.gh)
+
+        #Check if we've logged in
+        if self.gh:
+            #print('Debug - initGitHub - Logged in')
+            return True
+        else:
+            print('Debug - initGitHub - Error Logging in')
+            return False
+
+
+    def createGist(self, gistName):
+        #Define gist name and content
+        files = { str(gistName) : github.InputFileContent('Hello Beautiful!') }
+        descriptionStr = 'Gist for sending Love Messages'
+
+        #Create gist
+        gistReturn = self.gh.get_user().create_gist(False, files, descriptionStr)
+
+        #Get ID
+        gistID = gistReturn.id
+        return gistID
+
+
+    def readGist(self):
+        #Get gist text
+        gistText = self.gh.get_gist( self.readCredentialsGistID() ).files[self.readCredentialsGistName()].content
+        return gistText
+
+
+    def verifyCredentialFile(self):
+        try:
+            self.readCredentialsToken()
+        #Assume Exception is missing file
+        except:
+            print('Unable to read file')
+            return False
+
+        return True
+
+    def readCredentialsToken(self):
+        with open(self.credentialFile, 'r') as fd:
+            token = fd.readline().strip()
+        return token
+
+
+    def readCredentialsGistName(self):
+        with open(self.credentialFile, 'r') as fd:
+            token = fd.readline().strip()
+            gistName = str(fd.readline().strip() )
+        return gistName
+
+
+    def readCredentialsGistID(self):
+        with open(self.credentialFile, 'r') as fd:
+            token = fd.readline().strip()
+            gistName = str(fd.readline().strip() )
+            gistID = str(fd.readline().strip() )
+        return gistID
+
+
+    #Write single line to file
+    def writeCredentialsLine(self, token, gistName, gistID=None):
+        with open(self.credentialFile, 'w+') as fd:
+            fd.write(str(token) + '\n')
+            fd.write(str(gistName) + '\n')
+
+            if gistID:
+                fd.write(str(gistID) + '\n')
+
+
+    def addCredentialsGistID(self, gistID):
+        token = self.readCredentialsToken()
+        gistName = self.readCredentialsGistName()
+
+        self.writeCredentialsLine(token, gistName, gistID)
+
+
+#Start Love Box Function with credential file
+loveBox = appFunctions(CREDENTIALS_FILE_V2)
 
 #Setup Scheduler to check Github for updates
 scheduler = APScheduler()
@@ -32,45 +133,25 @@ class Config(object):
 # Schedule task to check for new data on gist
 @scheduler.task('interval', id='tskCheckGist', seconds=(2*60), misfire_grace_time=900)
 def checkGistBackgroundTask():
-    print('Checking Gist')
-    #Set variables to global
-    global gistNewData
-    global gistOldLine
-    global gistLine
+    print('Fn: checkGistBackgroundTask')
 
-    #Make sure a Credential file exists and contains token and id
-    try:
-        token = id = ''
-        with open(CREDENTIALS_FILE, 'r') as fd:
-            token = fd.readline().strip()
-            id = int( fd.readline().strip() )
-            gistID = str(fd.readline().strip() )
+    if loveBox.githubLogin() == False:
+        print('Debug checkGistBackgroundTask - Unable to login')
 
-        #Login
-        gh = login(token=token)
+    else:
+        gistText = loveBox.readGist()
+        #print('Debug - checkGistBackgroundTask - gistText: ', gistText)
 
-        #Get all gists
-        gists = [g for g in gh.gists()]
-
-        #Sort all gists
-        for g in gists:
-            #Get the right gist
-            if g.id == gistID:
-                rawLine = str(g.files['valentinesDay'].content()).strip()
+        print('GitHub: {} - {}'.format(gistText, type(gistText)))
+        print('gistOldLine: {} - {}'.format(loveBox.gistOldLine, type(loveBox.gistOldLine)))
+        print('loveBox.gistLine: {} - {}'.format(loveBox.gistLine, type(loveBox.gistLine)))
 
         #Compare against old line. Update if new data
-        if rawLine != gistOldLine:
-            gistNewData = True
-            gistLine = rawLine.strip()
+        if gistText != loveBox.gistOldLine:
+            loveBox.gistNewData = True
+            loveBox.gistLine = gistText
+            print('Updating gistLine...')
 
-    except Exception as e:
-
-        print('Background Exception: ', e)
-        gistLine = e
-        gistNewData = True
-    #Try and different exception to know when to login
-    #401 Bad credentials
-    #[Errno 2] No such file or directory: 'valentinesCreds.txt'
 
 #checkGist will recieve the latest text from website
 @app.route('/checkGist', methods=['GET', 'POST'])
@@ -80,54 +161,35 @@ def checkGist():
                 'data': 'None',
                 'type': 'None'}
 
-    #Set variables to global
-    global gistNewData
-    global gistOldLine
-    global gistLine
-
     #Get latest gistLine from the website.
-    try:
-        websiteCurrent = request.args.get('webFrontEnd', 0)
+    websiteCurrent = request.args.get('webFrontEnd', 0)
 
-        print('Website: ', websiteCurrent)
-        print('gistLine: ', gistLine)
-        print('gistOldLine: ', gistOldLine)
+    print('WebsiteCurrent: {} - {}'.format(websiteCurrent, type(websiteCurrent)))
+    print('gistOldLine: {} - {}'.format(loveBox.gistOldLine, type(loveBox.gistOldLine)))
+    print('loveBox.gistLine: {} - {}'.format(loveBox.gistLine, type(loveBox.gistLine)))
 
-        #See if website (Front/Back end) is out of sync str(bytes_string, 'utf-8')
-        #Website now contains <div>text<div>
-        #divMatch = r"[^<>]+(?=[<])"
-        #match = re.search(divMatch, websiteCurrent)
-        #print(match)
-        #print(match.group(0))
-
-        #if websiteCurrent != gistLine:
-        #if match != gistLine:
-        #if match.group(0):
-        if gistLine not in websiteCurrent:
-            print('Website needs update. Current: ', websiteCurrent)
-
-            gistNewData = True
-
-    except Exception as e:
-        print('Exception: ',e)
+    #See if website (Front/Back end) is out of sync str(bytes_string, 'utf-8')
+    if loveBox.gistLine not in websiteCurrent:
+        print('Website needs update. Current: ', websiteCurrent)
+        loveBox.gistNewData = True
 
     #Updated content
-    if gistNewData:
+    if loveBox.gistNewData:
         #Determine the type (text, picture, video)
-        gistType, gistDiv = determineGistType( str(gistLine) )
+        gistType = determineGistType( str(loveBox.gistLine) )
 
         toReturn['newData'] = 'True'
-        #Returns html line to display
-        toReturn['data'] = str(gistDiv)
+        toReturn['data'] = str(loveBox.gistLine)
         toReturn['type'] = str(gistType.name)
 
-        #Update globals
-        gistOldLine = str(gistLine)
-        gistNewData = False
-
-        print(toReturn)
+        #Update
+        loveBox.gistOldLine = loveBox.gistLine
+        loveBox.gistNewData = False
+    else:
+        toReturn['newData'] = 'False'
 
     return jsonify(toReturn)
+
 
 #Gist can be line of text, image, or youtube video
 #Return type and line
@@ -138,16 +200,12 @@ def determineGistType(gistLineInQuestion):
     #Default to type being text
     gistType = gistTypeOptions.text
     gistText = str(gistLineInQuestion)
-    gistDiv = "<div>" + gistText + "</div>"
 
     #Search for image
     match = re.search(regexImage, gistLineInQuestion, re.IGNORECASE | re.MULTILINE)
     if match:
         gistType = gistTypeOptions.image
         gistText = str(match.group(0))
-        #Generate the div to return
-        gistDiv = "<div><img src=\"" + gistText +"\"></div>"
-
 
     #Search for video
     match = re.search(regexVideo, gistLineInQuestion, re.IGNORECASE | re.MULTILINE)
@@ -155,111 +213,47 @@ def determineGistType(gistLineInQuestion):
         gistType = gistTypeOptions.video
         gistText = str(match.group(0))
 
-    return gistType, gistDiv
+    return gistType
+
+
+#Github is dropping user/pass support in library. New methold will require
+# user to sign into Github and create New Personal Token. And copy the Token
+# into the app. Token will override old token
+@app.route('/initGitHub', methods=['POST'])
+def initGitHub():
+    print('Debug - initGitHub')
+    #Get form Token and gist name
+    if request.method == 'POST':
+        results = request.form.to_dict()
+
+    #Get token and gist name - Need to update page to force user to enter both
+    newToken = str(results['gitHubToken'])
+    newGistName = str(results['gistName'])
+
+    print('Debug - initGitHub - newToken: ', newToken)
+    print('Debug - initGitHub - newGistName: ', newGistName)
+
+    #Write token and gist name
+    loveBox.writeCredentialsLine(newToken, newGistName)
+
+    #Check to see if we can login
+    if loveBox.githubLogin() == False:
+        print('Unable to login')
+        #Maybe update the page with error?
+        return render_template('index.html')
+
+    #Create gist
+    gistID = loveBox.createGist(newGistName)
+    loveBox.addCredentialsGistID(gistID)
+
+    #Left off here
+    return render_template('index.html')
 
 
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/index', methods=['GET', 'POST'])
 def displayWebPage():
     return render_template('index.html')
-
-
-#Inital Login to Github
-#Setups gist and token
-@app.route('/initAuthGitHub', methods=['POST'])
-def initAuthGitHub():
-    print('Auth Time')
-
-    #Get Github login info
-    if request.method == 'POST':
-        results = request.form.to_dict()
-
-    user = results['githubLogin']
-    password = results['githubPassword']
-
-    #Need to do some better error handling
-    #while not password:
-    #    password = getpass('Password for {0}: '.format(user))
-
-    if user == '' or password == '':
-        return render_template('index.html')
-
-    #Define scopes and note name
-    note = 'Valentines Day Gist App'
-    scopes = ['user', 'gist']
-
-    #Connect to Github
-    try:
-        auth = authorize(user, password, scopes, note)
-
-        #Write token and ID to file to read later.
-        with open(CREDENTIALS_FILE, 'w+') as fd:
-            fd.write(str(auth.token) + '\n')
-            fd.write(str(auth.id) + '\n')
-
-        auth.delete()
-
-    except (DeprecationWarning):
-        print('Exception - Deprecation Warning')
-
-    except Exception as e:
-        #Github API throws up exception, but still creates the API token
-        #Ignoring it for now. Will look at later.
-
-        print(e)
-
-        if e == '401 Bad credentials':
-            print('Exception - 401 Bad credentials')
-            return render_template('index.html')
-
-    print('Done creating token')
-
-    #Login using token
-    try:
-        token = id = ''
-        with open(CREDENTIALS_FILE, 'r') as fd:
-            token = fd.readline().strip()
-            id = int( fd.readline().strip() )
-
-        print('Token read')
-
-        #Login
-        gh = login(token=token)
-        print(gh)
-        #auth = gh.authorization(id)
-
-        print('Logged in with token!')
-
-        #DummyText for testing
-        dateNowStr = datetime.datetime.now().strftime("%m/%d/%Y-%H:%M:%S")
-
-        #Create gist
-
-        files = {
-        'valentinesDay' : {
-            'content': dateNowStr
-            }
-        }
-
-        gist = gh.create_gist('gistName', files, public=False)
-
-        print('Created gist')
-
-        # gist == <Gist [gist-id]>
-        print(gist.html_url)
-
-        gistID = gist.html_url.split('/')[-1]
-        with open(CREDENTIALS_FILE, 'a') as fd:
-            fd.write(str(gistID) + '\n')
-
-    except Exception as e:
-        print(e)
-
-    finally:
-        #Reload page
-        return render_template('index.html')
-
-
 
 
 #Update text before starting app
@@ -278,4 +272,4 @@ if __name__ == '__main__':
     scheduler.start()
 
     #Run the damn thing
-    app.run(host='192.168.1.104', debug=True, port=5000)
+    app.run(host='0.0.0.0', debug=True, port=5000)
