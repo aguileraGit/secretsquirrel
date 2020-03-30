@@ -27,7 +27,7 @@ function checkForNewLine() {
   console.log('Checking for data');
 
   var currentText = document.getElementById("gistLine").innerHTML;
-  var flaskUrl = "http://192.168.1.10:5000/checkGist?webFrontEnd=" + currentText;
+  var flaskUrl = "http://192.168.1.104:5000/checkGist?webFrontEnd=" + currentText;
   //console.log(flaskUrl)
 
   $.ajax({
