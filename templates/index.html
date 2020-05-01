@@ -16,6 +16,7 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/open-iconic/1.1.1/font/css/open-iconic-bootstrap.min.css" rel="stylesheet">
 
   <!-- Load custom JS -->
+  <!-- <script src="../static/js/myScript.js"></script> -->
   <script src="/static/js/myScript.js"></script>
 
   <!-- Google Fonts -->
@@ -23,6 +24,11 @@
 
   <!-- Bootstap -->
   <link type="text/css" rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" />
+
+  <!-- Clock -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/flipclock/0.7.8/flipclock.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flipclock/0.7.8/flipclock.css">
+
 
   <style type="text/css">
     html,
@@ -73,6 +79,11 @@
       cursor: none;
     }
 
+    .shiftCenter {
+      left: 50%;
+      top: 50%;
+    }
+
     .heart {
       fill: red;
       width: 50px;
@@ -109,10 +120,13 @@
       <path d="M23.6,0c-3.4,0-6.3,2.7-7.6,5.6C14.7,2.7,11.8,0,8.4,0C3.8,0,0,3.8,0,8.4c0,9.4,9.5,11.9,16,21.2
 c6.1-9.3,16-12.1,16-21.2C32,3.8,28.2,0,23.6,0z" />
     </svg>
+
   </div>
 
   <!-- Overlay that detects when the screen is pressed -->
-  <div id="overlay" onclick="screenSaverOFF()"> </div>
+  <div id="overlay" onclick="screenSaverOFF()">
+        <div id='clock' class="clock"></div>
+  </div>
 
   <!-- Modal -->
   <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">

@@ -1,3 +1,13 @@
+
+var clock;
+
+$(document).ready(function() {
+  clock = $('.clock').FlipClock({
+    clockFace: 'TwentyFourHourClock',
+    showSeconds: false
+  });
+});
+
 //Set interval to check for new data
 var myVar = setInterval(checkForNewLine, 3000);
 
@@ -122,12 +132,14 @@ function formatDivVideo(gistLine) {
 function screenSaverON() {
   console.log('Enable screensaver')
   document.getElementById("overlay").style.display = "block";
+  document.getElementById("clock").style.display = "block";
 }
 
 //Turn off the screensaver
 function screenSaverOFF() {
   //Turn off screensaver
   document.getElementById("overlay").style.display = "none";
+  document.getElementById("clock").style.display = "none";
 
   //Hide notification
   hideNotification()
