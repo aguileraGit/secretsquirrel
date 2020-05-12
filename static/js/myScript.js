@@ -1,6 +1,7 @@
 
 var clock;
 
+//Start clock
 $(document).ready(function() {
   clock = $('.clock').FlipClock({
     clockFace: 'TwentyFourHourClock',
@@ -11,25 +12,35 @@ $(document).ready(function() {
 //Set interval to check for new data
 var myVar = setInterval(checkForNewLine, 3000);
 
-//Track sreensave
-var go = true;
+//Track sreensaver
+startTimer()
 
 function timer() {
   //Paused - bail!
   if(!go)
       return;
+
   //Enable screensaver
   screenSaverON();
   setTimeout(timer, 5000);
 }
 
+function restartTimer(){
+  console.log('Restart Timer')
+  go = true;
+  timer();
+}
+
 function stopTimer(){
-    go = false;
+  console.log('Stop Timer')
+  go = false;
+  setTimeout(restartTimer, 10000);
 }
 
 function startTimer(){
-    go = true;
-    timer();
+  console.log('Start Timer')
+  go = true;
+  timer();
 }
 
 //Call Flask backend for data
@@ -152,7 +163,6 @@ function screenSaverOFF() {
     //Restart when done
     startTimer();
   }, 10000);
-
 
 }
 
