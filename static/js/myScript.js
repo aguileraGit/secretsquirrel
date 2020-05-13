@@ -1,40 +1,35 @@
+//Bottom of page has page load init stuff
 
+//Clock variable
 var clock;
 
-//Start clock
-$(document).ready(function() {
-  clock = $('.clock').FlipClock({
-    clockFace: 'TwentyFourHourClock',
-    showSeconds: false
-  });
-});
-
 //Set interval to check for new data
-var myVar = setInterval(checkForNewLine, 3000);
+var myVar = setInterval(checkForNewLine, 20000);
 
-//Track sreensaver
-startTimer()
+var newData = false;
 
+//Timer function runs continously if go is true. It must be restarted is stopped.
+//To restart, call startTimer function
 function timer() {
   //Paused - bail!
   if(!go)
       return;
 
-  //Enable screensaver
+  //Force screensaver on every second
   screenSaverON();
-  setTimeout(timer, 5000);
-}
 
-function restartTimer(){
-  console.log('Restart Timer')
-  go = true;
-  timer();
+  //If no new data (screen has been clicked), show clock
+  //No need to show notifcation. Already has been set.
+  if(!newData){
+    showClock();
+  }
+  //Wait and run timer again
+  setTimeout(timer, 1000);
 }
 
 function stopTimer(){
   console.log('Stop Timer')
   go = false;
-  setTimeout(restartTimer, 10000);
 }
 
 function startTimer(){
@@ -43,7 +38,11 @@ function startTimer(){
   timer();
 }
 
-//Call Flask backend for data
+//Checks Flask backend for data. This is an governed by an interval.
+// If data is found, one of the functions is called to process the data:
+//  formatDivText
+//  formatDivImage
+//  formatDivVideo - not implemented
 function checkForNewLine() {
   console.log('Checking for data');
 
@@ -57,7 +56,8 @@ function checkForNewLine() {
 
       if (result["newData"] == "True") {
         console.log("New Data Found")
-        //Quick turn off display
+
+        //Quickly turn off display
         screenSaverON()
 
         //Get data type
@@ -71,12 +71,17 @@ function checkForNewLine() {
 
         } else if (dataType == 'video') {
           formatDivVideo( result["data"] )
+
         } else {
           document.getElementById("gistLine").innerHTML = 'Unknown data type'
         }
 
         //Show notification
         showNotification()
+        hideClock()
+
+        //Fresh data. New data.
+        newData = true;
       }
 
       else if(result["newData"] == 'False'){
@@ -139,31 +144,30 @@ function formatDivVideo(gistLine) {
   ;
 }
 
-//Turn the screen blank - 'Screen Saver'
+//Turn the screen black. I refer to this as the 'Screen Saver'
 function screenSaverON() {
-  console.log('Enable screensaver')
   document.getElementById("overlay").style.display = "block";
-  document.getElementById("clock").style.display = "block";
 }
 
 //Turn off the screensaver
 function screenSaverOFF() {
   //Turn off screensaver
   document.getElementById("overlay").style.display = "none";
-  document.getElementById("clock").style.display = "none";
+
+  //Screen has been clicked. Data isn't new anymore.
+  newData = false;
 
   //Hide notification
   hideNotification()
+
+  //Hide Clock
+  hideClock()
 
   //Stop Timer
   stopTimer();
 
   //Wait and re-enable
-  setTimeout(function() {
-    //Restart when done
-    startTimer();
-  }, 10000);
-
+  setTimeout(startTimer, 10000);
 }
 
 function hideNotification() {
@@ -174,9 +178,26 @@ function showNotification() {
   document.getElementById("notify").style.display = "block";
 }
 
+function hideClock() {
+  document.getElementById("clock").style.display = "none";
+}
+
+function showClock() {
+  document.getElementById("clock").style.display = "block";
+}
+
 //Page load events
 window.addEventListener('load', function() {
   //Init blank sceen
   document.getElementById("overlay").style.display = "block";
-  showNotification()
+
+  //Start clock
+  clock = $('.clock').FlipClock({
+    clockFace: 'TwentyFourHourClock',
+    showSeconds: false
+  });
+
+  //No new data yet...
+  newData = false;
+
 });
