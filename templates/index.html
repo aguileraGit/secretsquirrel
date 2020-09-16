@@ -46,7 +46,7 @@
 
       font-family: Pacifico;
 
-      top: -20%;
+      /*top: -20%;*/
 
     }
 
@@ -136,13 +136,14 @@ c6.1-9.3,16-12.1,16-21.2C32,3.8,28.2,0,23.6,0z" />
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h4 class="modal-title" id="exampleModalLabel">Github Personal Token</h4>
+          <h4 class="modal-title" id="exampleModalLabel">Settings</h4>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
         <div class="modal-body">
           <div>
+            <div><h5>GitHub Personal Token</h5></div>
             <p class="pb-2"><small class="text-muted">To start, login to Github and create a personal Token (Github - Settings - Developer Settings - Personal access token). The Token must have gist scopes. No other scopes are needed.</small></p>
           </div>
             <form action="initGitHub" method="POST">
@@ -152,12 +153,26 @@ c6.1-9.3,16-12.1,16-21.2C32,3.8,28.2,0,23.6,0z" />
                 <small id="emailHelp" class="form-text text-muted">Token lives on your computer and your computer only! <a href="faq.html">FAQ</a></small>
               </div>
               <div class="form-group">
-                <label for="exampleInputPassword1">Love Box Name</label>
-                <input type="text" class="form-control" id="exampleInputPassword1" placeholder="Some name to identify your Love Box." name="gistName">
+                <label for="exampleInputPassword1">Love Machine Name</label>
+                <input type="text" class="form-control" id="exampleInputPassword1" placeholder="Some name to identify your Love Machine." name="gistName">
               </div>
 
               <button type="submit" class="btn btn-primary">Submit</button>
             </form>
+            <div>
+              <form action="appSettings" method="POST" class="pt-3">
+                <div class="form-group">
+                  <label for="stopGitHubSleepTimeID">Sleep Time</label>
+                  <input type="text" class="form-control" id="stopGitHubSleepTimeID" placeholder="12pm" name="stopGitHubSleepTime">
+                </div>
+                <div class="form-group">
+                  <label for="stopGitHubSleepTimeID">Wake Time</label>
+                  <input type="text" class="form-control" id="startGitHubSleepTimeID" placeholder="7am" name="startGitHubSleepTime">
+                </div>
+                  <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+              </form>
+            </div>
         </div>
       </div>
     </div>
@@ -172,7 +187,7 @@ c6.1-9.3,16-12.1,16-21.2C32,3.8,28.2,0,23.6,0z" />
   <div class="vertical-center">
     <div class="container text-center">
       <div id="formatDiv">
-        <div id="gistLine">Love ya!</div>
+        <div id="gistLine">I Love you!</div>
       </div>
     </div>
   </div>
